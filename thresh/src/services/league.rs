@@ -17,6 +17,8 @@ pub fn create_leagues_service(conn: &PgConnection) {
     }
 }
 
+// PRIVATE
+
 #[tokio::main]
 async fn fetch_league(
     reg: &str,

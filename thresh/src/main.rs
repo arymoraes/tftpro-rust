@@ -14,7 +14,10 @@ mod services;
 fn main() {
     let conn = establish_connection();
 
-    services::league::create_leagues_service(&conn);
+    // services::league::create_leagues_service(&conn);
+    // let league = models::league::League::all(&conn);
+    // println!("{:?}", league);
+    services::summoner::get_summoners_service(&conn);
 }
 
 pub fn establish_connection() -> PgConnection {

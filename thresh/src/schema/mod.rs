@@ -1,9 +1,9 @@
 table! {
   leagues (league_id) {
       league_id -> Varchar,
-      tier -> Nullable<Varchar>,
-      queue -> Nullable<Varchar>,
-      name -> Nullable<Varchar>,
+      tier -> Varchar,
+      queue -> Varchar,
+      name -> Varchar,
       region -> Nullable<Varchar>,
   }
 }
@@ -11,14 +11,14 @@ table! {
 table! {
   summoners (id) {
       id -> Varchar,
-      account_id -> Nullable<Varchar>,
-      puuid -> Nullable<Varchar>,
-      name -> Nullable<Varchar>,
-      summoner_level -> Nullable<Int4>,
-      revision_date -> Nullable<Int8>,
-      profile_icon_id -> Nullable<Int4>,
+      account_id -> Varchar,
+      puuid -> Varchar,
+      name -> Varchar,
+      summoner_level -> Int4,
+      revision_date -> Int8,
+      profile_icon_id -> Int4,
       region -> Nullable<Varchar>,
-      league_id -> Nullable<Varchar>,
+      league_id -> Varchar,
   }
 }
 

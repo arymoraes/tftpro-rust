@@ -1,4 +1,6 @@
 pub mod league;
+pub mod summoner;
+
 use dotenv::dotenv;
 use std::env;
 

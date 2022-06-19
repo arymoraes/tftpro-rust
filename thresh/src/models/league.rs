@@ -26,4 +26,8 @@ impl League {
             Err(e) => println!("Problem while creating league: {}", e),
         }
     }
+
+    pub fn all(conn: &PgConnection) -> Vec<League> {
+        leagues::table.load::<League>(conn).unwrap()
+    }
 }

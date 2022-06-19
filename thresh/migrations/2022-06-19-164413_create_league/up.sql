@@ -1,7 +1,7 @@
 CREATE TABLE leagues (
   league_id VARCHAR NOT NULL PRIMARY KEY,
-  tier VARCHAR,
-  queue VARCHAR,
-  name VARCHAR,
+  tier VARCHAR NOT NULL,
+  queue VARCHAR NOT NULL,
+  name VARCHAR NOT NULL,
   region VARCHAR
 )
