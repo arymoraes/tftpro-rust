@@ -1,16 +1,39 @@
 use diesel::PgConnection;
 
-use crate::models::league;
+use crate::models::league::League;
 
-pub fn create_league_service<'a>(conn: &PgConnection, title: &'a str) -> league::League {
-    let new_league = league::League {
-        league_id: String::from("1"),
-        name: String::from(title),
-        queue: String::from("DANLIMA"),
-        tier: String::from("boilimax"),
-    };
+use super::get_api_key;
 
-    new_league.create(conn);
+pub fn create_leagues_service(conn: &PgConnection) {
+    let regions: [&str; 11] = [
+        "BR1", "EUN1", "EUW1", "JP1", "KR", "LA1", "LA2", "NA1", "OC1", "TR1", "RU",
+    ];
+    let tiers: [&str; 3] = ["master", "grandmaster", "challenger"];
 
-    new_league
+    for region in regions.iter() {
+        for tier in tiers.iter() {
+            fetch_league(region, tier, conn).unwrap();
+        }
+    }
+}
+
+#[tokio::main]
+async fn fetch_league(
+    reg: &str,
+    tier: &str,
+    conn: &PgConnection,
+) -> Result<League, Box<dyn std::error::Error>> {
+    let query_url = format!(
+        "https://{}.api.riotgames.com/tft/league/v1/{}?api_key={}",
+        reg,
+        tier,
+        get_api_key()
+    );
+    println!("Fetching league: {}", query_url);
+
+    let mut league = reqwest::get(query_url).await?.json::<League>().await?;
+    league.region = Some(reg.to_string());
+    league.create(conn);
+
+    Ok(league)
 }

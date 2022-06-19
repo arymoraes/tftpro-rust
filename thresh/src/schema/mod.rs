@@ -4,6 +4,7 @@ table! {
       tier -> Nullable<Varchar>,
       queue -> Nullable<Varchar>,
       name -> Nullable<Varchar>,
+      region -> Nullable<Varchar>,
   }
 }
 

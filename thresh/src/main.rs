@@ -14,7 +14,7 @@ mod services;
 fn main() {
     let conn = establish_connection();
 
-    services::league::create_league_service(&conn, "BOI LIMA LEAGUE");
+    services::league::create_leagues_service(&conn);
 }
 
 pub fn establish_connection() -> PgConnection {
