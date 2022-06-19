@@ -1,0 +1,8 @@
+c:\Projects\tftpro\thresh\target\debug\deps\unicode_ident-822a621b3e377975.rmeta: C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\unicode-ident-1.0.1\src\lib.rs C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\unicode-ident-1.0.1\src\tables.rs
+
+c:\Projects\tftpro\thresh\target\debug\deps\libunicode_ident-822a621b3e377975.rlib: C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\unicode-ident-1.0.1\src\lib.rs C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\unicode-ident-1.0.1\src\tables.rs
+
+c:\Projects\tftpro\thresh\target\debug\deps\unicode_ident-822a621b3e377975.d: C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\unicode-ident-1.0.1\src\lib.rs C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\unicode-ident-1.0.1\src\tables.rs
+
+C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\unicode-ident-1.0.1\src\lib.rs:
+C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\unicode-ident-1.0.1\src\tables.rs:

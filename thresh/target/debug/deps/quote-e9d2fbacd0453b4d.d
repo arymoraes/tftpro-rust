@@ -1,0 +1,13 @@
+c:\Projects\tftpro\thresh\target\debug\deps\quote-e9d2fbacd0453b4d.rmeta: C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\lib.rs C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\ext.rs C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\format.rs C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\ident_fragment.rs C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\to_tokens.rs C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\runtime.rs C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\spanned.rs
+
+c:\Projects\tftpro\thresh\target\debug\deps\libquote-e9d2fbacd0453b4d.rlib: C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\lib.rs C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\ext.rs C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\format.rs C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\ident_fragment.rs C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\to_tokens.rs C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\runtime.rs C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\spanned.rs
+
+c:\Projects\tftpro\thresh\target\debug\deps\quote-e9d2fbacd0453b4d.d: C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\lib.rs C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\ext.rs C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\format.rs C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\ident_fragment.rs C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\to_tokens.rs C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\runtime.rs C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\spanned.rs
+
+C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\lib.rs:
+C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\ext.rs:
+C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\format.rs:
+C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\ident_fragment.rs:
+C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\to_tokens.rs:
+C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\runtime.rs:
+C:\Users\Ary\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.19\src\spanned.rs:

@@ -1,0 +1,5 @@
+cargo:rerun-if-env-changed=PQ_LIB_DIR
+cargo:rerun-if-env-changed=PQ_LIB_STATIC
+cargo:rerun-if-env-changed=TARGET
+cargo:rustc-link-search=native=C:\Program Files\PostgreSQL\14\lib
+cargo:rustc-link-lib=dylib=libpq
