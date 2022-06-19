@@ -7,8 +7,14 @@ use diesel::prelude::*;
 use dotenv::dotenv;
 use std::env;
 
+mod models;
+mod schema;
+mod services;
+
 fn main() {
-    establish_connection();
+    let conn = establish_connection();
+
+    services::league::create_league_service(&conn, "BOI LIMA LEAGUE");
 }
 
 pub fn establish_connection() -> PgConnection {
