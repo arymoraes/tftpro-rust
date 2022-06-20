@@ -1,4 +1,6 @@
+use crate::diesel::ExpressionMethods;
 use crate::diesel::RunQueryDsl;
+use diesel::query_dsl::methods::FilterDsl;
 use diesel::PgConnection;
 use serde::Deserialize;
 
@@ -29,5 +31,12 @@ impl League {
 
     pub fn all(conn: &PgConnection) -> Vec<League> {
         leagues::table.load::<League>(conn).unwrap()
+    }
+
+    pub fn all_by_region(region: &str, conn: &PgConnection) -> Vec<League> {
+        leagues::table
+            .filter(leagues::region.eq(region))
+            .load::<League>(conn)
+            .expect("Error loading posts")
     }
 }

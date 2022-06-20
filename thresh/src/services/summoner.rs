@@ -1,7 +1,12 @@
 use diesel::PgConnection;
+use rayon::prelude::*;
 use serde::Deserialize;
+use std::{thread, time::Duration};
 
-use crate::models::{self, league::League};
+use crate::{
+    models::{self, league::League},
+    pool::get_connection_pool,
+};
 
 use super::get_api_key;
 
@@ -16,12 +21,22 @@ struct APIResponse {
     pub entries: Vec<ResponseSummoner>,
 }
 
-pub fn get_summoners_service(conn: &PgConnection) {
-    let leagues = League::all(conn);
+pub fn get_summoners_service() {
+    let regions: [&str; 11] = [
+        "BR1", "EUN1", "EUW1", "JP1", "KR", "LA1", "LA2", "NA1", "OC1", "TR1", "RU",
+    ];
 
-    for league in leagues {
-        fetch_summoners_from_league(&league, conn).unwrap();
-    }
+    let pool = get_connection_pool();
+
+    regions.par_iter().for_each(|region| {
+        let pool = pool.clone();
+        let conn = &mut pool.get().unwrap();
+
+        let leagues = League::all_by_region(region, conn);
+        for league in leagues {
+            fetch_summoners_from_league(&league, conn).unwrap();
+        }
+    });
 }
 
 #[tokio::main]
@@ -86,6 +101,13 @@ async fn create_summoner(
     };
 
     summoner.create(conn);
+    println!(
+        "Created summoner: {}, Region: {}",
+        summoner.name,
+        summoner.region.unwrap()
+    );
+
+    thread::sleep(Duration::from_millis(1000));
 
     Ok(())
 }
