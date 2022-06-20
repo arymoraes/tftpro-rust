@@ -76,6 +76,12 @@ async fn create_summoner(
     league_id: &str,
     conn: &PgConnection,
 ) -> Result<(), Box<dyn std::error::Error>> {
+    let summoner_exists = models::summoner::Summoner::exists(&summoner_id, conn);
+
+    if summoner_exists {
+        return Ok(());
+    }
+
     let query_url = format!(
         "https://{}.api.riotgames.com/tft/summoner/v1/summoners/{}?api_key={}",
         region,

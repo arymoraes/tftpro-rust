@@ -1,5 +1,4 @@
-use crate::diesel::RunQueryDsl;
-use diesel::PgConnection;
+use diesel::{ExpressionMethods, PgConnection, QueryDsl, RunQueryDsl};
 use serde::Deserialize;
 
 use crate::schema::summoners;
@@ -40,6 +39,21 @@ impl Summoner {
         match result {
             Ok(_) => (),
             Err(e) => println!("Problem while creating summoner: {}", e),
+        }
+    }
+
+    pub fn exists(id: &str, conn: &PgConnection) -> bool {
+        let result: Result<i64, diesel::result::Error> = summoners::table
+            .filter(summoners::id.eq(&id))
+            .count()
+            .get_result(conn); // Result<i64, Error>
+
+        match result {
+            Ok(count) => count > 0,
+            Err(e) => {
+                println!("Problem while checking if summoner exists: {}", e);
+                false
+            }
         }
     }
 }
