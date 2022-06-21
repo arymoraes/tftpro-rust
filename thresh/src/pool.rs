@@ -3,6 +3,8 @@ use diesel::r2d2::ConnectionManager;
 use diesel::r2d2::Pool;
 use dotenv::dotenv;
 use std::env;
+use std::thread;
+use std::time::Duration;
 
 pub fn get_connection_pool() -> Pool<ConnectionManager<PgConnection>> {
     dotenv().ok();
@@ -13,6 +15,8 @@ pub fn get_connection_pool() -> Pool<ConnectionManager<PgConnection>> {
         .test_on_check_out(true)
         .build(manager)
         .expect("Could not build connection pool");
+
+    thread::sleep(Duration::from_secs(1));
 
     conn_pool
 }

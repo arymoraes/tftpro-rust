@@ -26,6 +26,8 @@ pub fn get_summoners_service() {
         "BR1", "EUN1", "EUW1", "JP1", "KR", "LA1", "LA2", "NA1", "OC1", "TR1", "RU",
     ];
 
+    println!("{:?}", regions);
+
     let pool = get_connection_pool();
 
     regions.par_iter().for_each(|region| {
