@@ -1,0 +1,7 @@
+CREATE TABLE items (
+  id INTEGER NOT NULL PRIMARY KEY,
+  name_id VARCHAR NOT NULL,
+  img VARCHAR,
+  loadouts_icon VARCHAR NOT NULL,
+  guid VARCHAR NOT NULL
+)

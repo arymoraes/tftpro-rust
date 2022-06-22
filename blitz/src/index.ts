@@ -14,7 +14,6 @@ const databaseConnection = async () => {
     await createConnection({
       entities: [Character, Item, Trait],
       port: 5432,
-      synchronize: true, // DO NOT USE FOR PRODUCTION
       type: 'postgres',
       url: process.env.DATABASE_URL,
     });
