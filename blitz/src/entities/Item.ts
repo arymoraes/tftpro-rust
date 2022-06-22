@@ -1,28 +1,25 @@
 import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm';
 
-@Entity('characters')
-export class Character extends BaseEntity {
+@Entity('items')
+export class Item extends BaseEntity {
   @PrimaryColumn()
-  character_id: string;
+  id: number;
 
   @Column({
     nullable: true,
   })
   img: string;
 
+  @Column()
+  name_id: string;
+
   @Column({
     nullable: true,
   })
-  tier: number;
+  loadouts_icon: string;
 
   @Column({
     nullable: true,
   })
-  rarity: number;
-
-  @Column()
-  display_name: string;
-
-  @Column()
-  square_icon_path: string;
+  guid: string;
 }

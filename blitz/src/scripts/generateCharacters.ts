@@ -1,6 +1,6 @@
-import dotenv from 'dotenv';
 import { Character } from '../entities/Character';
 import databaseConnection from '../index';
+import charactersJson from './assets/characters.json';
 
 const characters = [
   'https://rerollcdn.com/characters/Skin/7/AoShin.png',
@@ -63,15 +63,26 @@ const characters = [
   'https://rerollcdn.com/characters/Skin/7/TahmKench.png',
 ];
 
-const insertCharacter = async (url: string) => {
-  const character = url.match(/(?<=Skin\/7\/)(.*)(?=.png)/)[0];
+interface CharacterInterface {
+  character_id: string;
+  display_name: string;
+  path: string;
+  rarity: number;
+  squareIconPath: string;
+}
+
+const insertCharacter = async (char: CharacterInterface) => {
+  const charIndex = characters.findIndex((charString) =>
+    charString.includes(char.display_name)
+  );
 
   await Character.create({
-    character_id: `TFT7_${character}`,
-    img: url,
+    ...char,
+    img: charIndex ? characters[charIndex] : null,
+    square_icon_path: char.squareIconPath,
   }).save();
 };
 
 databaseConnection().then(() => {
-  characters.forEach((url) => insertCharacter(url));
+  charactersJson.forEach((char) => insertCharacter(char));
 });
