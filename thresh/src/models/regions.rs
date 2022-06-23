@@ -1,4 +1,5 @@
-enum SubRegions {
+#[derive(Copy, Clone)]
+pub enum SubRegions {
     BR1,
     EUN1,
     EUW1,
@@ -12,7 +13,8 @@ enum SubRegions {
     RU,
 }
 
-enum Regions {
+#[derive(Copy, Clone)]
+pub enum Regions {
     Americas,
     Europe,
     Asia,
@@ -37,8 +39,8 @@ impl From<SubRegions> for Regions {
 }
 
 impl From<SubRegions> for String {
-    fn from(sub_region: SubRegions) -> String {
-        match sub_region {
+    fn from(s: SubRegions) -> Self {
+        match s {
             SubRegions::BR1 => "BR1".to_string(),
             SubRegions::EUN1 => "EUN1".to_string(),
             SubRegions::EUW1 => "EUW1".to_string(),

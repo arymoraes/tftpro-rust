@@ -1,6 +1,4 @@
-use crate::diesel::ExpressionMethods;
 use crate::schema::matches;
-use diesel::sql_types::Timestamp;
 use serde::Deserialize;
 
 struct MatchDtoMetadata {
@@ -69,8 +67,8 @@ struct MatchDto {
 struct Match {
     match_id: String,
     tft_set_core_name: String,
-    game_datetime: Timestamp,
-    game_length: i64,
+    game_datetime: i32,
+    game_length: i32,
     region: Option<String>,
 }
 
@@ -78,9 +76,9 @@ impl From<MatchDto> for Match {
     fn from(dto: MatchDto) -> Match {
         let new_match = Match {
             match_id: dto.metadata.match_id,
-            tft_set_core_name: dto.metadata.match_id,
-            game_datetime: dto.info.game_datetime,
-            game_length: dto.info.game_length,
+            tft_set_core_name: dto.info.tft_set_core_name,
+            game_datetime: dto.info.game_datetime as i32,
+            game_length: dto.info.game_length as i32,
             region: None,
         };
         new_match

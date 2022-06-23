@@ -32,7 +32,7 @@ table! {
 table! {
     matches (match_id) {
         match_id -> Varchar,
-        game_datetime -> Timestamp,
+        game_datetime -> Int4,
         game_length -> Int4,
         tft_set_core_name -> Varchar,
         region -> Nullable<Varchar>,
