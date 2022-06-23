@@ -56,4 +56,19 @@ impl Summoner {
             }
         }
     }
+
+    pub fn fetch_by_region(region: &str, conn: &PgConnection) -> Vec<String> {
+        let result: Result<Vec<String>, diesel::result::Error> = summoners::table
+            .filter(summoners::region.eq(region))
+            .select(summoners::puuid)
+            .get_results::<String>(conn);
+
+        match result {
+            Ok(puuids) => puuids,
+            Err(e) => {
+                println!("Problem while fetching summoners by region: {}", e);
+                Vec::new()
+            }
+        }
+    }
 }

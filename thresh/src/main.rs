@@ -8,5 +8,6 @@ mod schema;
 mod services;
 
 fn main() {
-    services::summoner::get_summoners_service();
+    // services::summoner::get_summoners_service();
+    services::league_match::create_matches_service();
 }
