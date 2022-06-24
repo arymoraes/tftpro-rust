@@ -1,18 +1,23 @@
+use crate::diesel::RunQueryDsl;
 use crate::schema::matches;
+use diesel::PgConnection;
 use serde::Deserialize;
 
+#[derive(Deserialize, Debug)]
 struct MatchDtoMetadata {
     data_version: String,
     match_id: String,
     participants: Vec<String>,
 }
 
+#[derive(Deserialize, Debug)]
 struct MatchDtoParticipantCompanion {
     content_ID: String,
     skin_ID: i32,
     species: String,
 }
 
+#[derive(Deserialize, Debug)]
 struct MatchDtoParticipantTraits {
     name: String,
     num_units: i32,
@@ -21,15 +26,17 @@ struct MatchDtoParticipantTraits {
     tier_total: i32,
 }
 
+#[derive(Deserialize, Debug)]
 struct MatchDtoParticipantUnits {
     character_id: String,
     itemNames: Vec<String>,
     items: Vec<i32>,
     name: String,
-    rarirty: i32,
+    rarity: i32,
     tier: i32,
 }
 
+#[derive(Deserialize, Debug)]
 struct MatchDtoParticipant {
     augments: Vec<String>,
     companion: MatchDtoParticipantCompanion,
@@ -37,17 +44,18 @@ struct MatchDtoParticipant {
     last_round: i32,
     level: i32,
     placement: i32,
-    players_eliminiated: i32,
+    players_eliminated: i32,
     puuid: String,
-    time_eliminated: i64,
+    time_eliminated: f64,
     total_damage_to_players: i32,
     traits: Vec<MatchDtoParticipantTraits>,
     units: Vec<MatchDtoParticipantUnits>,
 }
 
+#[derive(Deserialize, Debug)]
 struct MatchDtoInfo {
     game_datetime: i64,
-    game_length: i64,
+    game_length: f64,
     game_version: String,
     queue_id: i64,
     tft_game_type: String,
@@ -56,7 +64,8 @@ struct MatchDtoInfo {
     participants: Vec<MatchDtoParticipant>,
 }
 
-struct MatchDto {
+#[derive(Deserialize, Debug)]
+pub struct MatchDto {
     metadata: MatchDtoMetadata,
     info: MatchDtoInfo,
 }
@@ -64,12 +73,12 @@ struct MatchDto {
 #[table_name = "matches"]
 #[derive(Queryable, Insertable, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-struct Match {
-    match_id: String,
-    tft_set_core_name: String,
-    game_datetime: i32,
-    game_length: i32,
-    region: Option<String>,
+pub struct Match {
+    pub match_id: String,
+    pub tft_set_core_name: String,
+    pub game_datetime: i32,
+    pub game_length: i32,
+    pub region: Option<String>,
 }
 
 impl From<MatchDto> for Match {
@@ -83,4 +92,21 @@ impl From<MatchDto> for Match {
         };
         new_match
     }
+}
+
+impl Match {
+    pub fn create(&self, conn: &PgConnection) -> () {
+        let result: Result<usize, diesel::result::Error> = diesel::insert_into(matches::table)
+            .values(self)
+            .execute(conn);
+
+        match result {
+            Ok(_) => (),
+            Err(e) => println!("Problem while creating league: {}", e),
+        }
+    }
+
+    // pub fn all(conn: &PgConnection) -> Vec<League> {
+    //     leagues::table.load::<League>(conn).unwrap()
+    // }
 }

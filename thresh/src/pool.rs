@@ -18,5 +18,7 @@ pub fn get_connection_pool() -> Pool<ConnectionManager<PgConnection>> {
 
     thread::sleep(Duration::from_secs(1));
 
+    println!("Connected to database");
+
     conn_pool
 }

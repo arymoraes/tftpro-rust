@@ -1,9 +1,12 @@
+use std::{thread, time::Duration};
+
 use diesel::PgConnection;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::{
     models::{
         league::League,
+        league_match::{Match, MatchDto},
         regions::{Regions, SubRegions},
         summoner::Summoner,
     },
@@ -40,7 +43,15 @@ pub fn create_matches_service() {
         let reg = Regions::from(*sub_region);
 
         summoners_puuids.iter().for_each(|puuid| {
-            fetch_summoner_match_ids(puuid, reg, conn);
+            println!("Fetching matches for {}", puuid);
+            let match_ids: Vec<String> =
+                fetch_summoner_match_ids(puuid, reg).expect("Could not fetch matches");
+
+            let region_string = String::from(reg);
+
+            match_ids.iter().for_each(|m| {
+                fetch_match(&region_string, m, conn);
+            });
         });
     });
 }
@@ -53,19 +64,21 @@ fn fetch_region_summoners_puuids(reg: &String, conn: &PgConnection) -> Vec<Strin
 async fn fetch_summoner_match_ids(
     puuid: &str,
     region: Regions,
-    conn: &PgConnection,
 ) -> Result<Vec<String>, Box<dyn std::error::Error>> {
     let region_string = String::from(region);
     let query_url = format!(
-        "https://{}.api.riotgames.com/tft/match/v1/matches/by-puuid/{}/ids?start=0&count=20?api_key={}",
-        // "https://{}.api.riotgames.com/tft/match/v1/matches/by-summoner/{}?api_key={}",
+        "https://{}.api.riotgames.com/tft/match/v1/matches/by-puuid/{}/ids?start=0&count=20&api_key={}",
         region_string,
         puuid,
         get_api_key()
     );
-    println!("Fetching summoner match ids: {}", query_url);
 
-    let mut match_ids = reqwest::get(query_url).await?.json::<Vec<String>>().await?;
+    let match_ids = reqwest::get(query_url).await?.json::<Vec<String>>().await?;
+
+    // match_ids.iter().for_each(|match_id| {
+    //     println!("Fetching match {}", match_id);
+    //     fetch_match(match_id, &region_string, conn);
+    // });
 
     Ok(match_ids)
 }
@@ -73,20 +86,32 @@ async fn fetch_summoner_match_ids(
 #[tokio::main]
 async fn fetch_match(
     reg: &str,
-    tier: &str,
+    match_id: &str,
     conn: &PgConnection,
-) -> Result<League, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let query_url = format!(
-        "https://{}.api.riotgames.com/tft/league/v1/{}?api_key={}",
+        "https://{}.api.riotgames.com/tft/match/v1/matches/{}?api_key={}",
         reg,
-        tier,
+        match_id,
         get_api_key()
     );
-    println!("Fetching league: {}", query_url);
 
-    let mut league = reqwest::get(query_url).await?.json::<League>().await?;
-    league.region = Some(reg.to_string());
-    league.create(conn);
+    let league_match_dto = reqwest::get(query_url).await?.json::<MatchDto>().await;
 
-    Ok(league)
+    match league_match_dto {
+        Ok(league_match_dto) => {
+            let mut league_match = Match::from(league_match_dto);
+            league_match.region = Some(String::from(reg));
+
+            league_match.create(conn);
+
+            thread::sleep(Duration::from_millis(1000));
+
+            Ok(())
+        }
+        Err(e) => {
+            println!("{}", e);
+            Ok(())
+        }
+    }
 }
