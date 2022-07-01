@@ -44,6 +44,48 @@ table! {
         id -> Int4,
         match_id -> Varchar,
         summoner_id -> Varchar,
+        gold_left -> Int4,
+        level -> Int4,
+        placement -> Int4,
+        last_round -> Int4,
+    }
+}
+
+table! {
+    matches_participants_augments (id) {
+        id -> Int4,
+        match_participant_id -> Int4,
+        augment_id -> Int4,
+    }
+}
+
+table! {
+    matches_participants_traits (id) {
+        id -> Int4,
+        match_participant_id -> Int4,
+        trait_id -> Varchar,
+        num_units -> Int4,
+        tier_current -> Int4,
+        tier_total -> Int4,
+        style -> Int4,
+    }
+}
+
+table! {
+    matches_participants_unit_items (id) {
+        id -> Int4,
+        match_participant_unit_id -> Int4,
+        item_id -> Int4,
+    }
+}
+
+table! {
+    matches_participants_units (id) {
+        id -> Int4,
+        match_participant_id -> Int4,
+        unit_id -> Varchar,
+        rarity -> Int4,
+        tier -> Int4,
     }
 }
 
@@ -76,6 +118,14 @@ table! {
 
 joinable!(matches_participants -> matches (match_id));
 joinable!(matches_participants -> summoners (summoner_id));
+joinable!(matches_participants_augments -> items (augment_id));
+joinable!(matches_participants_augments -> matches_participants (match_participant_id));
+joinable!(matches_participants_traits -> matches_participants (match_participant_id));
+joinable!(matches_participants_traits -> traits (trait_id));
+joinable!(matches_participants_unit_items -> items (item_id));
+joinable!(matches_participants_unit_items -> matches_participants_units (match_participant_unit_id));
+joinable!(matches_participants_units -> characters (unit_id));
+joinable!(matches_participants_units -> matches_participants (match_participant_id));
 joinable!(summoners -> leagues (league_id));
 
 allow_tables_to_appear_in_same_query!(
@@ -84,6 +134,10 @@ allow_tables_to_appear_in_same_query!(
     leagues,
     matches,
     matches_participants,
+    matches_participants_augments,
+    matches_participants_traits,
+    matches_participants_unit_items,
+    matches_participants_units,
     summoners,
     traits,
 );
