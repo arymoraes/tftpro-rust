@@ -1,3 +1,4 @@
+use colored::Colorize;
 use diesel::PgConnection;
 use rayon::prelude::*;
 use serde::Deserialize;
@@ -26,7 +27,7 @@ pub fn get_summoners_service() {
         "BR1", "EUN1", "EUW1", "JP1", "KR", "LA1", "LA2", "NA1", "OC1", "TR1", "RU",
     ];
 
-    println!("{:?}", regions);
+    println!("{}", "Getting summoners...".green());
 
     let pool = get_connection_pool();
 
@@ -39,6 +40,8 @@ pub fn get_summoners_service() {
             fetch_summoners_from_league(&league, conn).unwrap();
         }
     });
+
+    println!("{}", "Summoners fetched!".green());
 }
 
 #[tokio::main]
@@ -47,6 +50,8 @@ async fn fetch_summoners_from_league(
     conn: &PgConnection,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let league_region = league.region.as_ref().unwrap();
+
+    println!("Fetching summoners from league: {}", league.name);
 
     let query_url = format!(
         "https://{}.api.riotgames.com/tft/league/v1/leagues/{}?api_key={}",
@@ -67,6 +72,8 @@ async fn fetch_summoners_from_league(
         .await?;
     }
 
+    println!("Summoners fetched from league: {}", league.name);
+
     Ok(())
 
     // now for each league we get all the summoners
@@ -78,6 +85,7 @@ async fn create_summoner(
     league_id: &str,
     conn: &PgConnection,
 ) -> Result<(), Box<dyn std::error::Error>> {
+    // N+1 -> fix later
     let summoner_exists = models::summoner::Summoner::exists(&summoner_id, conn);
 
     if summoner_exists {
@@ -106,13 +114,14 @@ async fn create_summoner(
         revision_date: response.revision_date,
         account_id: response.account_id,
         puuid: response.puuid,
+        revision_id: 1,
     };
 
     summoner.create(conn);
     println!(
         "Created summoner: {}, Region: {}",
-        summoner.name,
-        summoner.region.unwrap()
+        summoner.name.to_string().blue(),
+        summoner.region.unwrap().yellow()
     );
 
     thread::sleep(Duration::from_millis(1000));

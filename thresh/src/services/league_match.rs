@@ -73,14 +73,16 @@ async fn fetch_summoner_match_ids(
         get_api_key()
     );
 
-    let match_ids = reqwest::get(query_url).await?.json::<Vec<String>>().await?;
+    let match_ids = reqwest::get(query_url).await?.json::<Vec<String>>().await;
+    thread::sleep(Duration::from_millis(1000));
 
-    // match_ids.iter().for_each(|match_id| {
-    //     println!("Fetching match {}", match_id);
-    //     fetch_match(match_id, &region_string, conn);
-    // });
-
-    Ok(match_ids)
+    match match_ids {
+        Ok(ids) => Ok(ids),
+        Err(e) => {
+            println!("{}", e);
+            Ok(Vec::new())
+        }
+    }
 }
 
 #[tokio::main]
@@ -97,6 +99,7 @@ async fn fetch_match(
     );
 
     let league_match_dto = reqwest::get(query_url).await?.json::<MatchDto>().await;
+    thread::sleep(Duration::from_millis(1000));
 
     match league_match_dto {
         Ok(league_match_dto) => {
@@ -104,8 +107,6 @@ async fn fetch_match(
             league_match.region = Some(String::from(reg));
 
             league_match.create(conn);
-
-            thread::sleep(Duration::from_millis(1000));
 
             Ok(())
         }

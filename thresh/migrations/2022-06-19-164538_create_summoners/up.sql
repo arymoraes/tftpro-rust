@@ -8,6 +8,9 @@ CREATE TABLE summoners (
   profile_icon_id INTEGER NOT NULL,
   region VARCHAR,
   league_id VARCHAR NOT NULL,
+  revision_id BIGINT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
   -- Foreign keys
   FOREIGN KEY (league_id) REFERENCES leagues(league_id)

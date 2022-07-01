@@ -28,6 +28,7 @@ pub struct Summoner {
     pub revision_date: i64,
     pub account_id: String,
     pub puuid: String,
+    pub revision_id: i64,
 }
 
 impl Summoner {
