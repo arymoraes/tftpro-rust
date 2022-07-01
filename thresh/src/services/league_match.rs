@@ -6,7 +6,7 @@ use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use crate::{
     models::{
         league::League,
-        league_match::{Match, MatchDto},
+        league_match::{Match, MatchDto, MatchDtoParticipant, MatchParticipant},
         regions::{Regions, SubRegions},
         summoner::Summoner,
     },
@@ -103,10 +103,16 @@ async fn fetch_match(
 
     match league_match_dto {
         Ok(league_match_dto) => {
+            let participants = league_match_dto.clone().info.participants;
+
             let mut league_match = Match::from(league_match_dto);
             league_match.region = Some(String::from(reg));
 
             league_match.create(conn);
+
+            let match_id = String::from(&league_match.match_id);
+
+            create_match_participants(participants, match_id, conn);
 
             Ok(())
         }
@@ -114,5 +120,17 @@ async fn fetch_match(
             println!("{}", e);
             Ok(())
         }
+    }
+}
+
+fn create_match_participants(
+    participants: Vec<MatchDtoParticipant>,
+    match_id: String,
+    conn: &PgConnection,
+) {
+    for participant_dto in participants {
+        let mut participant = MatchParticipant::from(participant_dto);
+        participant.match_id = match_id.to_string();
+        participant.create(conn);
     }
 }
