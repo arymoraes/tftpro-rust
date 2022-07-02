@@ -7,7 +7,7 @@ CREATE TABLE summoners (
   revision_date BIGINT NOT NULL,
   profile_icon_id INTEGER NOT NULL,
   region VARCHAR,
-  league_id VARCHAR NOT NULL,
+  league_id VARCHAR,
   revision_id BIGINT NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

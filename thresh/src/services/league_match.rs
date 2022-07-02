@@ -1,5 +1,6 @@
 use std::{thread, time::Duration};
 
+use colored::Colorize;
 use diesel::PgConnection;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
@@ -12,7 +13,7 @@ use crate::{
     pool::get_connection_pool,
 };
 
-use super::{get_api_key, request::RequestOptions, summoner::create_summoner};
+use super::{get_api_key, request::RequestOptions, summoner::create_summoner_from_puuid};
 
 pub fn create_matches_service() {
     let sub_regions: [SubRegions; 11] = [
@@ -57,7 +58,15 @@ pub fn create_matches_service() {
             match_ids.iter().for_each(|m| {
                 let mut match_request_options = request_options.clone();
                 match_request_options.match_id = Some(m.clone());
-                fetch_match(match_request_options, conn);
+                match_request_options.summoner_puuid = Some(puuid.clone());
+                let fetched_match = fetch_match(match_request_options, conn);
+
+                match fetched_match {
+                    Ok(_) => {
+                        println!("Fetched match: {}", m);
+                    }
+                    Err(e) => println!("Could not fetch match: {}", e),
+                }
             });
         });
     });
@@ -142,20 +151,24 @@ async fn create_match_participants(
     for participant_dto in participants {
         let mut participant = MatchParticipant::from(participant_dto);
 
-        let summoner = Summoner::find_by_puuid(&participant.match_id, conn);
+        let summoner = Summoner::find_by_puuid(&participant.summoner_id, conn);
+        println!("{:?}", summoner);
+        let summoner_puuid = participant.summoner_id.clone();
 
-        if summoner.is_none() {
-            let new_summoner = create_summoner(
-                participant.match_id,
+        if summoner.unwrap() == 0 {
+            let new_summoner = create_summoner_from_puuid(
+                summoner_puuid,
                 &options.sub_region.as_ref().unwrap(),
-                &options.league_id.as_ref().unwrap(),
+                None,
                 conn,
             )
             .await;
 
+            thread::sleep(Duration::from_millis(1000));
+
             match new_summoner {
                 Ok(_) => {
-                    println!("Created summoner");
+                    println!("{}", String::from("Created summoner").bright_yellow());
                 }
                 Err(e) => {
                     println!("{}", e);

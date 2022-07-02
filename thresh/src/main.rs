@@ -1,3 +1,5 @@
+use pool::get_connection_pool;
+
 #[macro_use]
 extern crate diesel;
 extern crate dotenv;

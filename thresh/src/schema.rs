@@ -99,7 +99,7 @@ table! {
         revision_date -> Int8,
         profile_icon_id -> Int4,
         region -> Nullable<Varchar>,
-        league_id -> Varchar,
+        league_id -> Nullable<Varchar>,
         revision_id -> Int8,
         created_at -> Timestamp,
         updated_at -> Timestamp,

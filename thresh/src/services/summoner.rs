@@ -66,7 +66,7 @@ async fn fetch_summoners_from_league(
         create_summoner(
             summoner.summoner_id,
             &league_region,
-            &league.league_id,
+            Some(league.league_id.to_string()),
             conn,
         )
         .await?;
@@ -82,7 +82,7 @@ async fn fetch_summoners_from_league(
 pub async fn create_summoner(
     summoner_id: String,
     region: &str,
-    league_id: &str,
+    league_id: Option<String>,
     conn: &PgConnection,
 ) -> Result<(), Box<dyn std::error::Error>> {
     // N+1 -> fix later
@@ -108,7 +108,7 @@ pub async fn create_summoner(
         id: response.id,
         name: response.name,
         region: Some(region.to_string()),
-        league_id: league_id.to_string(),
+        league_id: league_id,
         profile_icon_id: response.profile_icon_id,
         summoner_level: response.summoner_level,
         revision_date: response.revision_date,
@@ -120,6 +120,49 @@ pub async fn create_summoner(
     summoner.create(conn);
     println!(
         "Created summoner: {}, Region: {}",
+        summoner.name.to_string().blue(),
+        summoner.region.unwrap().yellow()
+    );
+
+    thread::sleep(Duration::from_millis(1000));
+
+    Ok(())
+}
+
+pub async fn create_summoner_from_puuid(
+    puuid: String,
+    region: &str,
+    league_id: Option<String>,
+    conn: &PgConnection,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let query_url = format!(
+        "https://{}.api.riotgames.com/tft/summoner/v1/summoners/by-puuid/{}?api_key={}",
+        region,
+        puuid,
+        get_api_key()
+    );
+
+    let response = reqwest::get(query_url)
+        .await?
+        .json::<models::summoner::SummonerRaw>()
+        .await?;
+
+    let summoner = models::summoner::Summoner {
+        id: response.id,
+        name: response.name,
+        region: Some(region.to_string()),
+        league_id: league_id,
+        profile_icon_id: response.profile_icon_id,
+        summoner_level: response.summoner_level,
+        revision_date: response.revision_date,
+        account_id: response.account_id,
+        puuid: response.puuid,
+        revision_id: 1,
+    };
+
+    summoner.create(conn);
+    println!(
+        "Created summoner by puuid: {}, Region: {}",
         summoner.name.to_string().blue(),
         summoner.region.unwrap().yellow()
     );
