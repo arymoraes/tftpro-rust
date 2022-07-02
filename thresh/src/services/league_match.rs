@@ -5,7 +5,6 @@ use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::{
     models::{
-        league::League,
         league_match::{Match, MatchDto, MatchDtoParticipant, MatchParticipant},
         regions::{Regions, SubRegions},
         summoner::Summoner,
@@ -13,7 +12,7 @@ use crate::{
     pool::get_connection_pool,
 };
 
-use super::get_api_key;
+use super::{get_api_key, request::RequestOptions, summoner::create_summoner};
 
 pub fn create_matches_service() {
     let sub_regions: [SubRegions; 11] = [
@@ -38,37 +37,46 @@ pub fn create_matches_service() {
 
         let s_region = String::from(*sub_region);
 
-        let summoners_puuids = fetch_region_summoners_puuids(&s_region, conn);
+        let mut request_options = RequestOptions {
+            sub_region: Some(s_region),
+            league_id: None,
+            summoner_puuid: None,
+            match_id: None,
+            region: None,
+        };
 
-        let reg = Regions::from(*sub_region);
+        let summoners_puuids = fetch_region_summoners_puuids(&request_options, conn);
+
+        request_options.region = Some(String::from(Regions::from(*sub_region)));
 
         summoners_puuids.iter().for_each(|puuid| {
             println!("Fetching matches for {}", puuid);
             let match_ids: Vec<String> =
-                fetch_summoner_match_ids(puuid, reg).expect("Could not fetch matches");
-
-            let region_string = String::from(reg);
+                fetch_summoner_match_ids(puuid, &request_options).expect("Could not fetch matches");
 
             match_ids.iter().for_each(|m| {
-                fetch_match(&region_string, m, conn);
+                let mut match_request_options = request_options.clone();
+                match_request_options.match_id = Some(m.clone());
+                fetch_match(match_request_options, conn);
             });
         });
     });
 }
 
-fn fetch_region_summoners_puuids(reg: &String, conn: &PgConnection) -> Vec<String> {
-    Summoner::fetch_by_region(reg, conn)
+fn fetch_region_summoners_puuids(options: &RequestOptions, conn: &PgConnection) -> Vec<String> {
+    let sub_region = options.sub_region.as_ref().unwrap();
+
+    Summoner::fetch_by_region(&sub_region, conn)
 }
 
 #[tokio::main]
 async fn fetch_summoner_match_ids(
     puuid: &str,
-    region: Regions,
+    options: &RequestOptions,
 ) -> Result<Vec<String>, Box<dyn std::error::Error>> {
-    let region_string = String::from(region);
     let query_url = format!(
         "https://{}.api.riotgames.com/tft/match/v1/matches/by-puuid/{}/ids?start=0&count=20&api_key={}",
-        region_string,
+        options.region.as_ref().unwrap(),
         puuid,
         get_api_key()
     );
@@ -87,14 +95,15 @@ async fn fetch_summoner_match_ids(
 
 #[tokio::main]
 async fn fetch_match(
-    reg: &str,
-    match_id: &str,
+    mut options: RequestOptions,
     conn: &PgConnection,
 ) -> Result<(), Box<dyn std::error::Error>> {
+    let match_region = options.region.as_ref().unwrap();
+
     let query_url = format!(
         "https://{}.api.riotgames.com/tft/match/v1/matches/{}?api_key={}",
-        reg,
-        match_id,
+        match_region,
+        options.match_id.unwrap(),
         get_api_key()
     );
 
@@ -106,13 +115,15 @@ async fn fetch_match(
             let participants = league_match_dto.clone().info.participants;
 
             let mut league_match = Match::from(league_match_dto);
-            league_match.region = Some(String::from(reg));
+            league_match.region = Some(match_region.to_string());
 
             league_match.create(conn);
 
             let match_id = String::from(&league_match.match_id);
 
-            create_match_participants(participants, match_id, conn);
+            options.match_id = Some(match_id);
+
+            create_match_participants(participants, options, conn).await;
 
             Ok(())
         }
@@ -123,9 +134,9 @@ async fn fetch_match(
     }
 }
 
-fn create_match_participants(
+async fn create_match_participants(
     participants: Vec<MatchDtoParticipant>,
-    match_id: String,
+    options: RequestOptions,
     conn: &PgConnection,
 ) {
     for participant_dto in participants {
@@ -134,10 +145,26 @@ fn create_match_participants(
         let summoner = Summoner::find_by_puuid(&participant.match_id, conn);
 
         if summoner.is_none() {
-            return;
+            let new_summoner = create_summoner(
+                participant.match_id,
+                &options.sub_region.as_ref().unwrap(),
+                &options.league_id.as_ref().unwrap(),
+                conn,
+            )
+            .await;
+
+            match new_summoner {
+                Ok(_) => {
+                    println!("Created summoner");
+                }
+                Err(e) => {
+                    println!("{}", e);
+                    continue;
+                }
+            }
         }
 
-        participant.match_id = match_id.to_string();
+        participant.match_id = options.match_id.as_ref().unwrap().to_string();
         participant.create(conn);
     }
 }

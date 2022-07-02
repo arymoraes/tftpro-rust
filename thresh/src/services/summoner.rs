@@ -79,7 +79,7 @@ async fn fetch_summoners_from_league(
     // now for each league we get all the summoners
 }
 
-async fn create_summoner(
+pub async fn create_summoner(
     summoner_id: String,
     region: &str,
     league_id: &str,
