@@ -130,6 +130,13 @@ fn create_match_participants(
 ) {
     for participant_dto in participants {
         let mut participant = MatchParticipant::from(participant_dto);
+
+        let summoner = Summoner::find_by_puuid(&participant.match_id, conn);
+
+        if summoner.is_none() {
+            return;
+        }
+
         participant.match_id = match_id.to_string();
         participant.create(conn);
     }

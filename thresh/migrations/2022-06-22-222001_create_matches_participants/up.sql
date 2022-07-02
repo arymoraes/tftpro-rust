@@ -9,5 +9,5 @@ create table matches_participants (
 
   -- Foreign keys
   FOREIGN KEY (match_id) REFERENCES matches(match_id),
-  FOREIGN KEY (summoner_id) REFERENCES summoners(id)
+  FOREIGN KEY (summoner_id) REFERENCES summoners(puuid)
 )

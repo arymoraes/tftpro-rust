@@ -1,7 +1,7 @@
 CREATE TABLE summoners (
   id VARCHAR NOT NULL PRIMARY KEY,
   account_id VARCHAR NOT NULL,
-  puuid VARCHAR NOT NULL,
+  puuid VARCHAR NOT NULL UNIQUE,
   name VARCHAR NOT NULL,
   summoner_level INTEGER NOT NULL,
   revision_date BIGINT NOT NULL,

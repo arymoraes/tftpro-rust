@@ -147,7 +147,7 @@ impl MatchParticipant {
 
         match result {
             Ok(_) => (),
-            Err(e) => println!("Problem while creating league: {}", e),
+            Err(e) => println!("Problem while creating match participant: {}. \n Match ID: {},\n Participant: {}\n", e, self.match_id, self.summoner_id),
         }
     }
 }

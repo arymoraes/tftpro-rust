@@ -117,7 +117,6 @@ table! {
 }
 
 joinable!(matches_participants -> matches (match_id));
-joinable!(matches_participants -> summoners (summoner_id));
 joinable!(matches_participants_augments -> items (augment_id));
 joinable!(matches_participants_augments -> matches_participants (match_participant_id));
 joinable!(matches_participants_traits -> matches_participants (match_participant_id));

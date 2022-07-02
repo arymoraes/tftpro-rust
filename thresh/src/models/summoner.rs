@@ -58,6 +58,21 @@ impl Summoner {
         }
     }
 
+    pub fn find_by_puuid(puuid: &str, conn: &PgConnection) -> Option<i64> {
+        let result: Result<i64, diesel::result::Error> = summoners::table
+            .filter(summoners::puuid.eq(&puuid))
+            .count()
+            .get_result(conn); // Result<i64, Error>
+
+        match result {
+            Ok(summoner) => Some(summoner),
+            Err(e) => {
+                println!("Problem while finding summoner by puuid: {}", e);
+                None
+            }
+        }
+    }
+
     pub fn fetch_by_region(region: &str, conn: &PgConnection) -> Vec<String> {
         let result: Result<Vec<String>, diesel::result::Error> = summoners::table
             .filter(summoners::region.eq(region))
