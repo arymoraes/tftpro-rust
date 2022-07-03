@@ -1,6 +1,9 @@
 use diesel::PgConnection;
 
-use crate::models::league_match::{dto::MatchDtoParticipantUnits, units::NewMatchParticipantUnit};
+use crate::models::league_match::{
+    dto::MatchDtoParticipantUnits, items::NewMatchParticipantUnitItem,
+    units::NewMatchParticipantUnit,
+};
 
 pub fn create_participant_units(
     units: Vec<MatchDtoParticipantUnits>,
@@ -8,6 +11,8 @@ pub fn create_participant_units(
     conn: &PgConnection,
 ) -> () {
     for unit in units {
+        let unit_items_ids = unit.items;
+
         let match_participant_unit = NewMatchParticipantUnit {
             match_participant_id: participant_id,
             unit_id: unit.character_id,
@@ -18,7 +23,9 @@ pub fn create_participant_units(
         let new_unit = match_participant_unit.create(conn);
 
         match new_unit {
-            Ok(_) => (),
+            Ok(_) => {
+                create_participant_unit_items(unit_items_ids, participant_id, conn);
+            }
             Err(e) => {
                 println!(
                     "Problem while creating match participant unit: {}. \n Participant ID: {},\n",
@@ -26,5 +33,20 @@ pub fn create_participant_units(
                 );
             }
         }
+    }
+}
+
+pub fn create_participant_unit_items(
+    items: Vec<i32>,
+    participant_id: i32,
+    conn: &PgConnection,
+) -> () {
+    for item in items {
+        let match_participant_unit_item = NewMatchParticipantUnitItem {
+            match_participant_unit_id: participant_id,
+            item_id: item,
+        };
+
+        match_participant_unit_item.create(conn);
     }
 }

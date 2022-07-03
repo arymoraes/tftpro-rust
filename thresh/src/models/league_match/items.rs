@@ -1,19 +1,23 @@
 use crate::diesel::RunQueryDsl;
 use diesel::PgConnection;
 
-use crate::{
-    models::league_match::units::MatchParticipantUnit, schema::matches_participants_unit_items,
-};
+use crate::schema::matches_participants_unit_items;
 
-#[derive(Insertable, Queryable, Associations)]
-#[table_name = "matches_participants_unit_items"]
-#[belongs_to(MatchParticipantUnit)]
+#[derive(Queryable)]
 pub struct MatchParticipantUnitItem {
+    pub id: i32,
     pub match_participant_unit_id: i32,
     pub item_id: i32,
 }
 
-impl MatchParticipantUnitItem {
+#[derive(Insertable)]
+#[table_name = "matches_participants_unit_items"]
+pub struct NewMatchParticipantUnitItem {
+    pub match_participant_unit_id: i32,
+    pub item_id: i32,
+}
+
+impl NewMatchParticipantUnitItem {
     pub fn create(&self, conn: &PgConnection) -> () {
         let result: Result<usize, diesel::result::Error> =
             diesel::insert_into(matches_participants_unit_items::table)
