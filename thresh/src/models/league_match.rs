@@ -3,6 +3,10 @@ use crate::models::summoner::Summoner;
 
 use crate::schema::matches;
 use crate::schema::matches_participants;
+use crate::schema::matches_participants_augments;
+use crate::schema::matches_participants_traits;
+use crate::schema::matches_participants_unit_items;
+use crate::schema::matches_participants_units;
 
 use diesel::PgConnection;
 use serde::Deserialize;
@@ -90,6 +94,7 @@ pub struct Match {
 #[belongs_to(Match)]
 #[belongs_to(Summoner)]
 pub struct MatchParticipant {
+    pub id: i32,
     pub match_id: String,
     pub summoner_id: String,
     pub gold_left: i32,
@@ -111,9 +116,48 @@ impl From<MatchDto> for Match {
     }
 }
 
+#[table_name = "matches_participants_augments"]
+#[derive(Insertable, Queryable, Associations, Clone)]
+#[belongs_to(MatchParticipant)]
+pub struct MatchParticipantAugment {
+    pub match_participant_id: i32,
+    pub augment_id: i32,
+}
+
+#[table_name = "matches_participants_traits"]
+#[derive(Insertable, Queryable, Associations)]
+#[belongs_to(MatchParticipant)]
+pub struct MatchParticipantTrait {
+    pub match_participant_id: i32,
+    pub trait_id: String,
+    pub num_units: i32,
+    pub tier_current: i32,
+    pub tier_total: i32,
+    pub style: i32,
+}
+
+#[table_name = "matches_participants_units"]
+#[derive(Insertable, Queryable, Associations)]
+#[belongs_to(MatchParticipant)]
+pub struct MatchParticipantUnit {
+    pub match_participant_id: i32,
+    pub unit_id: String,
+    pub rarity: i32,
+    pub tier: i32,
+}
+
+#[table_name = "matches_participants_unit_items"]
+#[derive(Insertable, Queryable, Associations)]
+#[belongs_to(MatchParticipantUnit)]
+pub struct MatchParticipantUnitItem {
+    pub match_participant_unit_id: i32,
+    pub item_id: i32,
+}
+
 impl From<MatchDtoParticipant> for MatchParticipant {
     fn from(dto: MatchDtoParticipant) -> MatchParticipant {
         let new_match_participant = MatchParticipant {
+            id: 0,
             match_id: String::from(""),
             summoner_id: dto.puuid,
             gold_left: dto.gold_left,
@@ -148,6 +192,62 @@ impl MatchParticipant {
         match result {
             Ok(_) => (),
             Err(e) => println!("Problem while creating match participant: {}. \n Match ID: {},\n Participant: {}\n", e, self.match_id, self.summoner_id),
+        }
+    }
+}
+
+impl MatchParticipantAugment {
+    pub fn create(&self, conn: &PgConnection) -> () {
+        let result: Result<usize, diesel::result::Error> =
+            diesel::insert_into(matches_participants_augments::table)
+                .values(self)
+                .execute(conn);
+
+        match result {
+            Ok(_) => (),
+            Err(e) => println!("Problem while creating match participant augment: {}. \n Match ID: {},\n Participant: {}\n", e, self.match_participant_id, self.augment_id),
+        }
+    }
+}
+
+impl MatchParticipantTrait {
+    pub fn create(&self, conn: &PgConnection) -> () {
+        let result: Result<usize, diesel::result::Error> =
+            diesel::insert_into(matches_participants_traits::table)
+                .values(self)
+                .execute(conn);
+
+        match result {
+            Ok(_) => (),
+            Err(e) => println!("Problem while creating match participant trait: {}. \n Match ID: {},\n Participant: {}\n", e, self.match_participant_id, self.trait_id),
+        }
+    }
+}
+
+impl MatchParticipantUnit {
+    pub fn create(&self, conn: &PgConnection) -> () {
+        let result: Result<usize, diesel::result::Error> =
+            diesel::insert_into(matches_participants_units::table)
+                .values(self)
+                .execute(conn);
+
+        match result {
+            Ok(_) => (),
+            Err(e) => println!("Problem while creating match participant unit: {}. \n Match ID: {},\n Participant: {}\n", e, self.match_participant_id, self.unit_id),
+        }
+    }
+}
+
+impl MatchParticipantUnitItem {
+    pub fn create(&self, conn: &PgConnection) -> () {
+        let result: Result<usize, diesel::result::Error> =
+            diesel::insert_into(matches_participants_unit_items::table)
+                .values(self)
+                .execute(conn);
+
+        match result {
+            Ok(_) => (),
+            Err(e) => println!("Problem while creating match participant unit item: {}. \n Match ID: {},\n Participant: {}\n", e, self.match_participant_unit_id, self.item_id),
         }
     }
 }

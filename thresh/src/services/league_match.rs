@@ -6,7 +6,10 @@ use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::{
     models::{
-        league_match::{Match, MatchDto, MatchDtoParticipant, MatchParticipant},
+        item::Item,
+        league_match::{
+            Match, MatchDto, MatchDtoParticipant, MatchParticipant, MatchParticipantAugment,
+        },
         regions::{Regions, SubRegions},
         summoner::Summoner,
     },
@@ -149,6 +152,8 @@ async fn create_match_participants(
     conn: &PgConnection,
 ) {
     for participant_dto in participants {
+        let mut participant_augments = participant_dto.augments.clone();
+
         let mut participant = MatchParticipant::from(participant_dto);
 
         let summoner = Summoner::find_by_puuid(&participant.summoner_id, conn);
@@ -179,5 +184,16 @@ async fn create_match_participants(
 
         participant.match_id = options.match_id.as_ref().unwrap().to_string();
         participant.create(conn);
+
+        for augment in participant_augments {
+            let augment_id = Item::from_name_id(&augment, conn);
+
+            let match_participant_augment = MatchParticipantAugment {
+                match_participant_id: 1,
+                augment_id: augment_id.id,
+            };
+
+            match_participant_augment.create(conn);
+        }
     }
 }
