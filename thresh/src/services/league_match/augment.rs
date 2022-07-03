@@ -10,9 +10,13 @@ pub fn create_participant_augments(
     for augment in augments {
         let augment_id = Item::from_name_id(&augment, conn);
 
+        if augment_id.is_none() {
+            continue;
+        }
+
         let match_participant_augment = NewMatchParticipantAugment {
             match_participant_id: participant_id,
-            augment_id: augment_id.id,
+            augment_id: augment_id.unwrap(),
         };
 
         match_participant_augment.create(conn);

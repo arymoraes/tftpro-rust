@@ -91,6 +91,7 @@ async fn fetch_summoner_match_ids(
     );
 
     let match_ids = reqwest::get(query_url).await?.json::<Vec<String>>().await;
+    // let request = reqwest::get(&query_url).await;
     thread::sleep(Duration::from_millis(1000));
 
     match match_ids {

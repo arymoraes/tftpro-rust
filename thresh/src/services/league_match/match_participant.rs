@@ -32,7 +32,6 @@ pub async fn create_match_participants(
         let mut participant = NewMatchParticipant::from(participant_dto);
 
         let summoner = Summoner::find_by_puuid(&participant.summoner_id, conn);
-        println!("{:?}", summoner);
         let summoner_puuid = participant.summoner_id.clone();
 
         if summoner.unwrap() == 0 {

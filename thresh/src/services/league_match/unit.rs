@@ -23,8 +23,8 @@ pub fn create_participant_units(
         let new_unit = match_participant_unit.create(conn);
 
         match new_unit {
-            Ok(_) => {
-                create_participant_unit_items(unit_items_ids, participant_id, conn);
+            Ok(u) => {
+                create_participant_unit_items(unit_items_ids, u.id, conn);
             }
             Err(e) => {
                 println!(
@@ -36,14 +36,10 @@ pub fn create_participant_units(
     }
 }
 
-pub fn create_participant_unit_items(
-    items: Vec<i32>,
-    participant_id: i32,
-    conn: &PgConnection,
-) -> () {
+pub fn create_participant_unit_items(items: Vec<i32>, unit_id: i32, conn: &PgConnection) -> () {
     for item in items {
         let match_participant_unit_item = NewMatchParticipantUnitItem {
-            match_participant_unit_id: participant_id,
+            match_participant_unit_id: unit_id,
             item_id: item,
         };
 

@@ -1,6 +1,7 @@
 use crate::diesel::{ExpressionMethods, QueryDsl, RunQueryDsl};
 use crate::schema::items;
 
+use colored::Colorize;
 use diesel::PgConnection;
 use serde::Deserialize;
 
@@ -16,11 +17,39 @@ pub struct Item {
 }
 
 impl Item {
-    pub fn from_name_id(name: &str, conn: &PgConnection) -> Item {
+    pub fn from_name_id(name: &str, conn: &PgConnection) -> Option<i32> {
         use crate::schema::items::dsl::*;
 
-        let item = items.filter(name_id.eq(name)).load::<Item>(conn).unwrap();
+        let query = items.filter(name_id.eq(name)).load::<Item>(conn);
 
-        item[0].clone()
+        match query {
+            Ok(i) => {
+                if i.len() > 0 {
+                    return Some(i[0].id);
+                } else {
+                    return None;
+                }
+            }
+            Err(e) => {
+                debug_panic();
+                panic!(
+                    "Problem while getting item from name_id: {}. \n Item name: {}\n",
+                    e, name
+                );
+            }
+        };
     }
+}
+
+pub fn debug_panic() {
+    let string = String::from("#################################################").red();
+    println!("{}", string);
+    println!("{}", string);
+    println!("{}", string);
+    println!("{}", string);
+    println!("{}", string);
+    println!("{}", string);
+    println!("{}", string);
+    println!("{}", string);
+    println!("{}", string);
 }
