@@ -1,5 +1,6 @@
-use super::match_participant::NewMatchParticipant;
-use crate::models::league_match::league_match::Match;
+#![allow(dead_code)]
+#![allow(non_snake_case)]
+use super::{league_match::NewMatch, match_participant::NewMatchParticipant};
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug, Clone)]
@@ -69,9 +70,9 @@ pub struct MatchDto {
     pub info: MatchDtoInfo,
 }
 
-impl From<MatchDto> for Match {
-    fn from(dto: MatchDto) -> Match {
-        let new_match = Match {
+impl From<MatchDto> for NewMatch {
+    fn from(dto: MatchDto) -> NewMatch {
+        let new_match = NewMatch {
             match_id: dto.metadata.match_id,
             tft_set_core_name: dto.info.tft_set_core_name,
             game_datetime: dto.info.game_datetime as i32,

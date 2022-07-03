@@ -1,4 +1,5 @@
 use pool::get_connection_pool;
+use services::league_match::league_match::create_matches_service;
 
 #[macro_use]
 extern crate diesel;
@@ -10,11 +11,9 @@ mod schema;
 mod services;
 
 fn main() {
-    // services::summoner::get_summoners_service();
-    // services::league_match::create_matches_service();
-    // create a diesel connection pool:
-    // let conn = get_connection_pool();
-    // services::league::create_leagues_service(&conn.get().expect("Could not connect to DB"));
-    // services::summoner::get_summoners_service();
-    services::league_match::create_matches_service();
+    services::summoner::get_summoners_service();
+    let conn = get_connection_pool();
+    services::league::create_leagues_service(&conn.get().expect("Could not connect to DB"));
+    services::summoner::get_summoners_service();
+    create_matches_service();
 }

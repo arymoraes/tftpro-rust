@@ -1,17 +1,23 @@
 use diesel::PgConnection;
+use serde::Deserialize;
 
-use crate::models::league_match::match_participant::MatchParticipant;
 use crate::{diesel::RunQueryDsl, schema::matches_participants_augments};
 
-#[derive(Insertable, Queryable, Associations, Clone)]
-#[table_name = "matches_participants_augments"]
-#[belongs_to(MatchParticipant)]
+#[derive(Queryable, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct MatchParticipantAugment {
     pub match_participant_id: i32,
     pub augment_id: i32,
 }
 
-impl MatchParticipantAugment {
+#[derive(Insertable)]
+#[table_name = "matches_participants_augments"]
+pub struct NewMatchParticipantAugment {
+    pub match_participant_id: i32,
+    pub augment_id: i32,
+}
+
+impl NewMatchParticipantAugment {
     pub fn create(&self, conn: &PgConnection) -> () {
         let result: Result<usize, diesel::result::Error> =
             diesel::insert_into(matches_participants_augments::table)

@@ -1,25 +1,19 @@
 use std::{thread, time::Duration};
 
-use colored::Colorize;
 use diesel::PgConnection;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::{
     models::{
-        item::Item,
-        league_match::{
-            augments::MatchParticipantAugment,
-            dto::{MatchDto, MatchDtoParticipant},
-            league_match::Match,
-            match_participant::NewMatchParticipant,
-        },
+        league_match::{dto::MatchDto, league_match::NewMatch},
         regions::{Regions, SubRegions},
         summoner::Summoner,
     },
     pool::get_connection_pool,
+    services::get_api_key,
 };
 
-use super::{get_api_key, request::RequestOptions, summoner::create_summoner_from_puuid};
+use super::{match_participant::create_match_participants, request::RequestOptions};
 
 pub fn create_matches_service() {
     let sub_regions: [SubRegions; 11] = [
@@ -129,7 +123,7 @@ async fn fetch_match(
         Ok(league_match_dto) => {
             let participants = league_match_dto.clone().info.participants;
 
-            let mut league_match = Match::from(league_match_dto);
+            let mut league_match = NewMatch::from(league_match_dto);
             league_match.region = Some(match_region.to_string());
 
             league_match.create(conn);
@@ -145,58 +139,6 @@ async fn fetch_match(
         Err(e) => {
             println!("{}", e);
             Ok(())
-        }
-    }
-}
-
-async fn create_match_participants(
-    participants: Vec<MatchDtoParticipant>,
-    options: RequestOptions,
-    conn: &PgConnection,
-) {
-    for participant_dto in participants {
-        let mut participant_augments = participant_dto.augments.clone();
-
-        let mut participant = NewMatchParticipant::from(participant_dto);
-
-        let summoner = Summoner::find_by_puuid(&participant.summoner_id, conn);
-        println!("{:?}", summoner);
-        let summoner_puuid = participant.summoner_id.clone();
-
-        if summoner.unwrap() == 0 {
-            let new_summoner = create_summoner_from_puuid(
-                summoner_puuid,
-                &options.sub_region.as_ref().unwrap(),
-                None,
-                conn,
-            )
-            .await;
-
-            thread::sleep(Duration::from_millis(1000));
-
-            match new_summoner {
-                Ok(_) => {
-                    println!("{}", String::from("Created summoner").bright_yellow());
-                }
-                Err(e) => {
-                    println!("{}", e);
-                    continue;
-                }
-            }
-        }
-
-        participant.match_id = options.match_id.as_ref().unwrap().to_string();
-        participant.create(conn);
-
-        for augment in participant_augments {
-            let augment_id = Item::from_name_id(&augment, conn);
-
-            let match_participant_augment = MatchParticipantAugment {
-                match_participant_id: 1,
-                augment_id: augment_id.id,
-            };
-
-            match_participant_augment.create(conn);
         }
     }
 }

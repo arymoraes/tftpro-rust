@@ -1,6 +1,5 @@
 pub mod league;
 pub mod league_match;
-pub mod request;
 pub mod summoner;
 
 use dotenv::dotenv;

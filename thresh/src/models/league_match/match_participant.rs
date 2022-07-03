@@ -5,7 +5,7 @@ use crate::schema::matches_participants;
 
 use diesel::PgConnection;
 
-#[derive(Insertable)]
+#[derive(Insertable, Queryable)]
 #[table_name = "matches_participants"]
 pub struct NewMatchParticipant {
     pub match_id: String,
@@ -16,7 +16,7 @@ pub struct NewMatchParticipant {
     pub last_round: i32,
 }
 
-#[derive(Queryable, Associations)]
+#[derive(Queryable, Associations, PartialEq, Identifiable)]
 #[table_name = "matches_participants"]
 #[belongs_to(Match)]
 #[belongs_to(Summoner)]
@@ -31,15 +31,18 @@ pub struct MatchParticipant {
 }
 
 impl NewMatchParticipant {
-    pub fn create(&self, conn: &PgConnection) -> () {
-        let result: Result<usize, diesel::result::Error> =
+    pub fn create(&self, conn: &PgConnection) -> Result<MatchParticipant, diesel::result::Error> {
+        let result: Result<MatchParticipant, diesel::result::Error> =
             diesel::insert_into(matches_participants::table)
                 .values(self)
-                .execute(conn);
+                .get_result(conn);
 
         match result {
-            Ok(_) => (),
-            Err(e) => println!("Problem while creating match participant: {}. \n Match ID: {},\n Participant: {}\n", e, self.match_id, self.summoner_id),
+            Ok(participant) => Ok(participant),
+            Err(e) => {
+                println!("Problem while creating match participant: {}. \n Match ID: {},\n Participant: {}\n", e, self.match_id, self.summoner_id);
+                Err(e)
+            }
         }
     }
 }
