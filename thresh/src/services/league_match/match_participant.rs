@@ -9,7 +9,10 @@ use crate::{
         summoner::Summoner,
     },
     services::{
-        league_match::{augment::create_participant_augments, traits::create_participant_traits},
+        league_match::{
+            augment::create_participant_augments, traits::create_participant_traits,
+            unit::create_participant_units,
+        },
         summoner::create_summoner_from_puuid,
     },
 };
@@ -24,6 +27,7 @@ pub async fn create_match_participants(
     for participant_dto in participants {
         let participant_augments = participant_dto.augments.clone();
         let participant_traits = participant_dto.traits.clone();
+        let participant_units = participant_dto.units.clone();
 
         let mut participant = NewMatchParticipant::from(participant_dto);
 
@@ -61,6 +65,7 @@ pub async fn create_match_participants(
                 println!("{}", String::from("Created participant").bright_yellow());
                 create_participant_augments(participant_augments, p.id, conn);
                 create_participant_traits(participant_traits, p.id, conn);
+                create_participant_units(participant_units, p.id, conn);
             }
             Err(e) => {
                 println!("{}", e);
