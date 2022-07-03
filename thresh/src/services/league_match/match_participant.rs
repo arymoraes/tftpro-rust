@@ -5,14 +5,13 @@ use diesel::PgConnection;
 
 use crate::{
     models::{
-        item::Item,
-        league_match::{
-            augments::NewMatchParticipantAugment, dto::MatchDtoParticipant,
-            match_participant::NewMatchParticipant,
-        },
+        league_match::{dto::MatchDtoParticipant, match_participant::NewMatchParticipant},
         summoner::Summoner,
     },
-    services::summoner::create_summoner_from_puuid,
+    services::{
+        league_match::{augment::create_participant_augments, traits::create_participant_traits},
+        summoner::create_summoner_from_puuid,
+    },
 };
 
 use super::request::RequestOptions;
@@ -24,6 +23,7 @@ pub async fn create_match_participants(
 ) {
     for participant_dto in participants {
         let participant_augments = participant_dto.augments.clone();
+        let participant_traits = participant_dto.traits.clone();
 
         let mut participant = NewMatchParticipant::from(participant_dto);
 
@@ -59,16 +59,8 @@ pub async fn create_match_participants(
         match new_participant {
             Ok(p) => {
                 println!("{}", String::from("Created participant").bright_yellow());
-                for augment in participant_augments {
-                    let augment_id = Item::from_name_id(&augment, conn);
-
-                    let match_participant_augment = NewMatchParticipantAugment {
-                        match_participant_id: p.id,
-                        augment_id: augment_id.id,
-                    };
-
-                    match_participant_augment.create(conn);
-                }
+                create_participant_augments(participant_augments, p.id, conn);
+                create_participant_traits(participant_traits, p.id, conn);
             }
             Err(e) => {
                 println!("{}", e);

@@ -11,7 +11,6 @@ mod schema;
 mod services;
 
 fn main() {
-    services::summoner::get_summoners_service();
     let conn = get_connection_pool();
     services::league::create_leagues_service(&conn.get().expect("Could not connect to DB"));
     services::summoner::get_summoners_service();

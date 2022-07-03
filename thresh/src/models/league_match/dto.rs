@@ -1,6 +1,9 @@
 #![allow(dead_code)]
 #![allow(non_snake_case)]
-use super::{league_match::NewMatch, match_participant::NewMatchParticipant};
+use super::{
+    league_match::NewMatch, match_participant::NewMatchParticipant,
+    traits::NewMatchParticipantTrait,
+};
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug, Clone)]
@@ -19,21 +22,21 @@ pub struct MatchDtoParticipantCompanion {
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct MatchDtoParticipantTraits {
-    name: String,
-    num_units: i32,
-    style: i32,
-    tier_current: i32,
-    tier_total: i32,
+    pub name: String,
+    pub num_units: i32,
+    pub style: i32,
+    pub tier_current: i32,
+    pub tier_total: i32,
 }
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct MatchDtoParticipantUnits {
-    character_id: String,
-    itemNames: Vec<String>,
-    items: Vec<i32>,
-    name: String,
-    rarity: i32,
-    tier: i32,
+    pub character_id: String,
+    pub itemNames: Vec<String>,
+    pub items: Vec<i32>,
+    pub name: String,
+    pub rarity: i32,
+    pub tier: i32,
 }
 
 #[derive(Deserialize, Debug, Clone)]
