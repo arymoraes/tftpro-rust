@@ -4,8 +4,8 @@ use crate::schema::items;
 use diesel::PgConnection;
 use serde::Deserialize;
 
-#[table_name = "items"]
 #[derive(Queryable, Insertable, Deserialize, Debug, Clone)]
+#[table_name = "items"]
 #[serde(rename_all = "camelCase")]
 pub struct Item {
     pub id: i32,

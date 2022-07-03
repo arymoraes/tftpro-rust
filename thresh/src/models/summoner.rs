@@ -15,8 +15,8 @@ pub struct SummonerRaw {
     pub puuid: String,
 }
 
-#[table_name = "summoners"]
 #[derive(Queryable, Insertable, Deserialize, Debug)]
+#[table_name = "summoners"]
 #[serde(rename_all = "camelCase")]
 pub struct Summoner {
     pub id: String,

@@ -6,8 +6,8 @@ use serde::Deserialize;
 
 use crate::schema::leagues;
 
-#[table_name = "leagues"]
 #[derive(Queryable, Insertable, Deserialize, Debug)]
+#[table_name = "leagues"]
 #[serde(rename_all = "camelCase")]
 pub struct League {
     pub league_id: String,

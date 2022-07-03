@@ -8,7 +8,10 @@ use crate::{
     models::{
         item::Item,
         league_match::{
-            Match, MatchDto, MatchDtoParticipant, MatchParticipant, MatchParticipantAugment,
+            augments::MatchParticipantAugment,
+            dto::{MatchDto, MatchDtoParticipant},
+            league_match::Match,
+            match_participant::NewMatchParticipant,
         },
         regions::{Regions, SubRegions},
         summoner::Summoner,
@@ -154,7 +157,7 @@ async fn create_match_participants(
     for participant_dto in participants {
         let mut participant_augments = participant_dto.augments.clone();
 
-        let mut participant = MatchParticipant::from(participant_dto);
+        let mut participant = NewMatchParticipant::from(participant_dto);
 
         let summoner = Summoner::find_by_puuid(&participant.summoner_id, conn);
         println!("{:?}", summoner);
