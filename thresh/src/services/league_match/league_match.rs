@@ -91,11 +91,18 @@ async fn fetch_summoner_match_ids(
     );
 
     let match_ids = reqwest::get(query_url).await?.json::<Vec<String>>().await;
-    // let request = reqwest::get(&query_url).await;
     thread::sleep(Duration::from_millis(1000));
 
+    // Only get the first 5 matches, or it'll fetch too much data
     match match_ids {
-        Ok(ids) => Ok(ids),
+        Ok(ids) => {
+            if ids.len() > 5 {
+                let match_ids: Vec<String> = ids.iter().take(5).cloned().collect();
+                Ok(match_ids)
+            } else {
+                Ok(ids)
+            }
+        }
         Err(e) => {
             println!("{}", e);
             Ok(Vec::new())

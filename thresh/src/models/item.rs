@@ -31,7 +31,6 @@ impl Item {
                 }
             }
             Err(e) => {
-                debug_panic();
                 panic!(
                     "Problem while getting item from name_id: {}. \n Item name: {}\n",
                     e, name
@@ -39,17 +38,4 @@ impl Item {
             }
         };
     }
-}
-
-pub fn debug_panic() {
-    let string = String::from("#################################################").red();
-    println!("{}", string);
-    println!("{}", string);
-    println!("{}", string);
-    println!("{}", string);
-    println!("{}", string);
-    println!("{}", string);
-    println!("{}", string);
-    println!("{}", string);
-    println!("{}", string);
 }
