@@ -1,9 +1,12 @@
 use diesel::PgConnection;
 use serde::Deserialize;
 
+use crate::models::league_match::match_participant::MatchParticipant;
 use crate::{diesel::RunQueryDsl, schema::matches_participants_augments};
 
-#[derive(Queryable, Deserialize, Debug)]
+#[derive(Queryable, Deserialize, Debug, Associations)]
+#[belongs_to(MatchParticipant)]
+#[table_name = "matches_participants_augments"]
 #[serde(rename_all = "camelCase")]
 pub struct MatchParticipantAugment {
     pub match_participant_id: i32,

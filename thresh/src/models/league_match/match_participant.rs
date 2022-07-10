@@ -16,7 +16,7 @@ pub struct NewMatchParticipant {
     pub last_round: i32,
 }
 
-#[derive(Queryable, Associations, PartialEq, Identifiable)]
+#[derive(Queryable, Associations, PartialEq, Identifiable, Debug)]
 #[table_name = "matches_participants"]
 #[belongs_to(Match)]
 #[belongs_to(Summoner)]

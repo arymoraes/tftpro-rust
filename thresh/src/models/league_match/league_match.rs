@@ -4,14 +4,15 @@ use serde::Deserialize;
 use crate::diesel::RunQueryDsl;
 use crate::schema::matches;
 
-#[derive(Queryable, Deserialize, Debug)]
+#[derive(Queryable, Deserialize, Debug, PartialEq, Eq, Identifiable)]
+#[primary_key(match_id)]
+#[table_name = "matches"]
 #[serde(rename_all = "camelCase")]
 pub struct Match {
-    pub id: i32,
     pub match_id: String,
-    pub tft_set_core_name: String,
     pub game_datetime: i32,
     pub game_length: i32,
+    pub tft_set_core_name: String,
     pub region: Option<String>,
 }
 

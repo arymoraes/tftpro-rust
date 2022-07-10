@@ -1,7 +1,6 @@
 use crate::diesel::{ExpressionMethods, QueryDsl, RunQueryDsl};
 use crate::schema::items;
 
-use colored::Colorize;
 use diesel::PgConnection;
 use serde::Deserialize;
 

@@ -1,9 +1,12 @@
 use crate::diesel::RunQueryDsl;
 use diesel::PgConnection;
 
+use crate::models::league_match::match_participant::MatchParticipant;
 use crate::schema::matches_participants_traits;
 
-#[derive(Queryable)]
+#[derive(Queryable, Associations, Identifiable, PartialEq, Debug)]
+#[belongs_to(MatchParticipant)]
+#[table_name = "matches_participants_traits"]
 pub struct MatchParticipantTrait {
     pub id: i32,
     pub match_participant_id: i32,

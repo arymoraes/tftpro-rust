@@ -1,19 +1,45 @@
 use std::{thread, time::Duration};
 
-use diesel::PgConnection;
+use diesel::{PgConnection, QueryDsl};
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::{
     models::{
-        league_match::{dto::MatchDto, league_match::NewMatch},
+        league_match::{
+            dto::MatchDto,
+            league_match::{Match, NewMatch},
+            match_participant::{self, MatchParticipant},
+        },
         regions::{Regions, SubRegions},
         summoner::Summoner,
     },
     pool::get_connection_pool,
+    schema::matches,
     services::get_api_key,
 };
 
 use super::{match_participant::create_match_participants, request::RequestOptions};
+
+pub fn get_match_participants(match_id: &str, conn: &PgConnection) -> Vec<MatchParticipant> {
+    use crate::diesel::BelongingToDsl;
+    use crate::diesel::RunQueryDsl;
+
+    let league_match = matches::table.find(match_id).first::<Match>(conn);
+
+    match league_match {
+        Ok(league_match) => {
+            let participants = match_participant::MatchParticipant::belonging_to(&league_match)
+                .load::<MatchParticipant>(conn)
+                .expect("Error loading participants");
+
+            participants
+        }
+        Err(e) => {
+            println!("Error loading league: {}", e);
+            Vec::new()
+        }
+    }
+}
 
 pub fn create_matches_service() {
     let sub_regions: [SubRegions; 11] = [

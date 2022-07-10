@@ -2,9 +2,12 @@ use diesel::PgConnection;
 
 use crate::diesel::RunQueryDsl;
 
+use crate::models::league_match::match_participant::MatchParticipant;
 use crate::schema::matches_participants_units;
 
-#[derive(Queryable)]
+#[derive(Queryable, Associations)]
+#[belongs_to(MatchParticipant)]
+#[table_name = "matches_participants_units"]
 pub struct MatchParticipantUnit {
     pub id: i32,
     pub match_participant_id: i32,
