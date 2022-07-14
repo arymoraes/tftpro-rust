@@ -1,10 +1,11 @@
 use crate::diesel::RunQueryDsl;
 use diesel::PgConnection;
+use serde::{Deserialize, Serialize};
 
 use crate::models::league_match::match_participant::MatchParticipant;
 use crate::schema::matches_participants_traits;
 
-#[derive(Queryable, Associations, Identifiable, PartialEq, Debug)]
+#[derive(Queryable, Associations, Identifiable, PartialEq, Debug, Deserialize, Serialize)]
 #[belongs_to(MatchParticipant)]
 #[table_name = "matches_participants_traits"]
 pub struct MatchParticipantTrait {

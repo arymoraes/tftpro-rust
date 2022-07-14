@@ -6,9 +6,12 @@ use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use crate::{
     models::{
         league_match::{
+            augments::MatchParticipantAugment,
             dto::MatchDto,
             league_match::{Match, NewMatch},
-            match_participant::{self, MatchParticipant},
+            match_participant::{self, MatchParticipant, MatchParticipantFull},
+            traits::MatchParticipantTrait,
+            units::{MatchParticipantUnit, MatchParticipantUnitFull},
         },
         regions::{Regions, SubRegions},
         summoner::Summoner,
@@ -20,7 +23,7 @@ use crate::{
 
 use super::{match_participant::create_match_participants, request::RequestOptions};
 
-pub fn get_match_participants(match_id: &str, conn: &PgConnection) -> Vec<MatchParticipant> {
+pub fn get_match_participants(match_id: &str, conn: &PgConnection) -> Vec<MatchParticipantFull> {
     use crate::diesel::BelongingToDsl;
     use crate::diesel::RunQueryDsl;
 
@@ -28,11 +31,54 @@ pub fn get_match_participants(match_id: &str, conn: &PgConnection) -> Vec<MatchP
 
     match league_match {
         Ok(league_match) => {
+            println!("{:?}", league_match);
             let participants = match_participant::MatchParticipant::belonging_to(&league_match)
                 .load::<MatchParticipant>(conn)
                 .expect("Error loading participants");
 
-            participants
+            let mut response = Vec::new();
+
+            participants.iter().for_each(|participant| {
+                // let summoner = Summoner::belonging_to(&participant).first::<Summoner>(conn);
+                // let augments = match_participant::augments::belonging_to(&participant)
+                //     .load::<match_participant::MatchParticipantAugment>(conn)
+                //     .expect("Error loading augments");
+                // let traits = match_participant::MatchParticipantTrait::belonging_to(&participant)
+                //     .load::<match_participant::MatchParticipantTrait>(conn)
+                //     .expect("Error loading traits");
+                // let units = match_participant::MatchParticipantUnitFull::belonging_to(&participant)
+                //     .load::<match_participant::MatchParticipantUnitFull>(conn)
+                //     .expect("Error loading units");
+
+                let augments = MatchParticipantAugment::belonging_to(participant)
+                    .load::<MatchParticipantAugment>(conn)
+                    .expect("Error loading participants");
+
+                let traits = MatchParticipantTrait::belonging_to(participant)
+                    .load::<MatchParticipantTrait>(conn)
+                    .expect("Error loading participants");
+
+                let units = MatchParticipantUnit::belonging_to(participant)
+                    .load::<MatchParticipantUnit>(conn)
+                    .expect("Error loading participants");
+
+                let full_participant = MatchParticipantFull {
+                    id: participant.id,
+                    match_id: participant.match_id.to_string(),
+                    summoner_id: participant.summoner_id.to_string(),
+                    gold_left: participant.gold_left,
+                    level: participant.level,
+                    placement: participant.placement,
+                    last_round: participant.last_round,
+                    // summoner: summoner.unwrap(),
+                    augments,
+                    traits,
+                    units,
+                };
+                response.push(full_participant);
+            });
+
+            response
         }
         Err(e) => {
             println!("Error loading league: {}", e);

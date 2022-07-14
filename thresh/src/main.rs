@@ -15,10 +15,4 @@ fn main() {
     // services::league::create_leagues_service(&conn.get().expect("Could not connect to DB"));
     // services::summoner::get_summoners_service();
     // create_matches_service();
-    let boilimax = get_match_participants(
-        "BR1_2551113406",
-        &conn.get().expect("Could not connect to DB"),
-    );
-
-    println!("{:?}", boilimax);
 }

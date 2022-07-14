@@ -4,6 +4,11 @@ use crate::models::summoner::Summoner;
 use crate::schema::matches_participants;
 
 use diesel::PgConnection;
+use serde::{Deserialize, Serialize};
+
+use super::augments::MatchParticipantAugment;
+use super::traits::MatchParticipantTrait;
+use super::units::MatchParticipantUnit;
 
 #[derive(Insertable, Queryable)]
 #[table_name = "matches_participants"]
@@ -28,6 +33,21 @@ pub struct MatchParticipant {
     pub level: i32,
     pub placement: i32,
     pub last_round: i32,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct MatchParticipantFull {
+    pub id: i32,
+    pub match_id: String,
+    pub summoner_id: String,
+    pub gold_left: i32,
+    pub level: i32,
+    pub placement: i32,
+    pub last_round: i32,
+    // pub summoner: Summoner,
+    pub augments: Vec<MatchParticipantAugment>,
+    pub traits: Vec<MatchParticipantTrait>,
+    pub units: Vec<MatchParticipantUnit>,
 }
 
 impl NewMatchParticipant {
