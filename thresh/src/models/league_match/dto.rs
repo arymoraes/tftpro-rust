@@ -78,7 +78,7 @@ impl From<MatchDto> for NewMatch {
         let new_match = NewMatch {
             match_id: dto.metadata.match_id,
             tft_set_core_name: dto.info.tft_set_core_name,
-            game_datetime: dto.info.game_datetime as i32,
+            game_datetime: dto.info.game_datetime as i64,
             game_length: dto.info.game_length as i32,
             region: None,
         };

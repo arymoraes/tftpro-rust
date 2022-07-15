@@ -10,7 +10,7 @@ use crate::schema::matches;
 #[serde(rename_all = "camelCase")]
 pub struct Match {
     pub match_id: String,
-    pub game_datetime: i32,
+    pub game_datetime: i64,
     pub game_length: i32,
     pub tft_set_core_name: String,
     pub region: Option<String>,
@@ -21,7 +21,7 @@ pub struct Match {
 pub struct NewMatch {
     pub match_id: String,
     pub tft_set_core_name: String,
-    pub game_datetime: i32,
+    pub game_datetime: i64,
     pub game_length: i32,
     pub region: Option<String>,
 }

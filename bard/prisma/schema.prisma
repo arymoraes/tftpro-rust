@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model diesel_schema_migrations {
+  version String   @id @db.VarChar(50)
+  run_on  DateTime @default(now()) @db.Timestamp(6)
+
+  @@map("__diesel_schema_migrations")
+}
+
+model characters {
+  character_id               String                       @id @db.VarChar
+  img                        String?                      @db.VarChar
+  tier                       Int?
+  rarity                     Int?
+  display_name               String                       @db.VarChar
+  square_icon_path           String                       @db.VarChar
+  matches_participants_units matches_participants_units[]
+}
+
+model items {
+  id                              Int                               @id
+  name_id                         String                            @db.VarChar
+  img                             String?                           @db.VarChar
+  loadouts_icon                   String                            @db.VarChar
+  guid                            String                            @db.VarChar
+  matches_participants_augments   matches_participants_augments[]
+  matches_participants_unit_items matches_participants_unit_items[]
+}
+
+model leagues {
+  league_id String      @id @db.VarChar
+  tier      String      @db.VarChar
+  queue     String      @db.VarChar
+  name      String      @db.VarChar
+  region    String?     @db.VarChar
+  summoners summoners[]
+}
+
+model matches {
+  match_id             String                 @id @db.VarChar
+  game_datetime        Int
+  game_length          Int
+  tft_set_core_name    String                 @db.VarChar
+  region               String?                @db.VarChar
+  matches_participants matches_participants[]
+}
+
+model matches_participants {
+  id                            Int                             @id @default(autoincrement())
+  match_id                      String                          @db.VarChar
+  summoner_id                   String                          @db.VarChar
+  gold_left                     Int
+  level                         Int
+  placement                     Int
+  last_round                    Int
+  matches                       matches                         @relation(fields: [match_id], references: [match_id], onDelete: NoAction, onUpdate: NoAction)
+  summoners                     summoners                       @relation(fields: [summoner_id], references: [puuid], onDelete: NoAction, onUpdate: NoAction)
+  matches_participants_augments matches_participants_augments[]
+  matches_participants_traits   matches_participants_traits[]
+  matches_participants_units    matches_participants_units[]
+}
+
+model matches_participants_augments {
+  id                   Int                  @id @default(autoincrement())
+  match_participant_id Int
+  augment_id           Int
+  items                items                @relation(fields: [augment_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  matches_participants matches_participants @relation(fields: [match_participant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model matches_participants_traits {
+  id                   Int                  @id @default(autoincrement())
+  match_participant_id Int
+  trait_id             String               @db.VarChar
+  num_units            Int
+  tier_current         Int
+  tier_total           Int
+  style                Int
+  matches_participants matches_participants @relation(fields: [match_participant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  traits               traits               @relation(fields: [trait_id], references: [trait_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model matches_participants_unit_items {
+  id                         Int                        @id @default(autoincrement())
+  match_participant_unit_id  Int
+  item_id                    Int
+  items                      items                      @relation(fields: [item_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  matches_participants_units matches_participants_units @relation(fields: [match_participant_unit_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model matches_participants_units {
+  id                              Int                               @id @default(autoincrement())
+  match_participant_id            Int
+  unit_id                         String                            @db.VarChar
+  rarity                          Int
+  tier                            Int
+  matches_participants            matches_participants              @relation(fields: [match_participant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  characters                      characters                        @relation(fields: [unit_id], references: [character_id], onDelete: NoAction, onUpdate: NoAction)
+  matches_participants_unit_items matches_participants_unit_items[]
+}
+
+model summoners {
+  id                   String                 @id @db.VarChar
+  account_id           String                 @db.VarChar
+  puuid                String                 @unique @db.VarChar
+  name                 String                 @db.VarChar
+  summoner_level       Int
+  revision_date        BigInt
+  profile_icon_id      Int
+  region               String?                @db.VarChar
+  league_id            String?                @db.VarChar
+  revision_id          BigInt
+  created_at           DateTime               @default(now()) @db.Timestamp(6)
+  updated_at           DateTime               @default(now()) @db.Timestamp(6)
+  leagues              leagues?               @relation(fields: [league_id], references: [league_id], onDelete: NoAction, onUpdate: NoAction)
+  matches_participants matches_participants[]
+}
+
+model traits {
+  trait_id                    String                        @id @db.VarChar
+  display_name                String                        @db.VarChar
+  set                         String                        @db.VarChar
+  icon_path                   String                        @db.VarChar
+  img                         String?                       @db.VarChar
+  matches_participants_traits matches_participants_traits[]
+}
