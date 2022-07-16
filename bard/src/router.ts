@@ -9,6 +9,7 @@ router.get('/matches', async (req, res) => {
       game_datetime: 'desc',
     },
     select: {
+      game_datetime: true,
       matches_participants: {
         select: {
           gold_left: true,
@@ -41,8 +42,11 @@ router.get('/matches', async (req, res) => {
               characters: {
                 select: {
                   display_name: true,
+                  img: true,
+                  tier: true,
                 },
               },
+              tier: true,
             },
           },
           placement: true,
@@ -53,6 +57,7 @@ router.get('/matches', async (req, res) => {
           },
         },
       },
+      region: true,
     },
     take: 10,
   });
