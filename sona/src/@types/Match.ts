@@ -23,19 +23,19 @@ export interface MatchParticipantUnitI {
 }
 
 export interface MatchParticipantI {
-  gold_left: Number;
-  level: Number;
+  gold_left: number;
+  level: number;
   matches_participants_augments: MatchParticipantAugmentI[];
   matches_participants_traits: MatchParticipantTraitI[];
   matches_participants_units: MatchParticipantUnitI[];
-  placement: Number;
+  placement: number;
   summoners: {
-    name: String;
+    name: string;
   };
 }
 
 export interface MatchI {
   game_datetime: Date;
   matches_participants: MatchParticipantI[];
-  region: String;
+  region: string;
 }
