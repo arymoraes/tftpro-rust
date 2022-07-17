@@ -13,6 +13,7 @@ table! {
     items (id) {
         id -> Int4,
         name_id -> Varchar,
+        name -> Varchar,
         img -> Nullable<Varchar>,
         loadouts_icon -> Varchar,
         guid -> Varchar,

@@ -1,4 +1,7 @@
-use std::{thread, time::Duration};
+use std::{
+    thread,
+    time::{Duration, SystemTime, UNIX_EPOCH},
+};
 
 use diesel::{PgConnection, QueryDsl};
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
@@ -201,6 +204,15 @@ async fn fetch_match(
 
     match league_match_dto {
         Ok(league_match_dto) => {
+            let now = SystemTime::now();
+            let since_the_epoch = now.duration_since(UNIX_EPOCH).expect("Time went backwards");
+
+            // If more than 24 hours ago, don't save the match
+            let yesterday = since_the_epoch.as_millis() - (1000 * 60 * 60 * 24);
+            if league_match_dto.clone().info.game_datetime < yesterday as i64 {
+                return Ok(());
+            };
+
             let participants = league_match_dto.clone().info.participants;
 
             let mut league_match = NewMatch::from(league_match_dto);

@@ -57,7 +57,7 @@ pub struct MatchDtoParticipant {
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct MatchDtoInfo {
-    game_datetime: i64,
+    pub game_datetime: i64,
     game_length: f64,
     game_version: String,
     queue_id: i64,

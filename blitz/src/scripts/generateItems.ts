@@ -73,6 +73,7 @@ const generateItem = async (item: ItemInterface) => {
     ...item,
     img: itemIndex >= 0 ? items[itemIndex] : null,
     loadouts_icon: item.loadoutsIcon,
+    name: item.name,
     name_id: item.nameId,
   }).save();
 };

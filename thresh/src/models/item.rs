@@ -10,6 +10,7 @@ use serde::Deserialize;
 pub struct Item {
     pub id: i32,
     pub name_id: String,
+    pub name: String,
     pub img: Option<String>,
     pub loadouts_icon: String,
     pub guid: String,
@@ -30,10 +31,7 @@ impl Item {
                 }
             }
             Err(e) => {
-                panic!(
-                    "Problem while getting item from name_id: {}. \n Item name: {}\n",
-                    e, name
-                );
+                panic!("Problem while getting item from name_id: {}. \n", e);
             }
         };
     }
