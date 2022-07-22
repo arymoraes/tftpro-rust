@@ -2,8 +2,11 @@ import {
   Accordion,
   Avatar,
   Badge,
+  Box,
   Container,
   Group,
+  Stack,
+  Text,
   Tooltip,
 } from '@mantine/core';
 import axios, { AxiosResponse } from 'axios';
@@ -12,6 +15,7 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
+import { GiTwoCoins } from 'react-icons/gi';
 import { MatchI } from '../@types/Match';
 import OneStar from '../assets/one-star.svg';
 import ThreeStars from '../assets/three-stars.svg';
@@ -132,74 +136,127 @@ const Home: NextPage = () => {
                               )}
                             >
                               <Group>
-                                {participant.matches_participants_units.map(
-                                  (unit) => (
-                                    <>
-                                      <Tooltip
-                                        closeDelay={50}
-                                        label={
-                                          unit.characters.display_name
-                                        }
-                                        openDelay={50}
-                                        withArrow
-                                      >
-                                        <Avatar
-                                          key={
+                                <Group
+                                  sx={{
+                                    flex: 1,
+                                  }}
+                                >
+                                  {participant.matches_participants_units.map(
+                                    (unit) => (
+                                      <>
+                                        <Tooltip
+                                          closeDelay={50}
+                                          label={
                                             unit.characters
                                               .display_name
                                           }
-                                          radius="xs"
-                                          size="lg"
-                                          src={unit.characters.img}
+                                          openDelay={50}
+                                          withArrow
+                                        >
+                                          <Avatar
+                                            key={
+                                              unit.characters
+                                                .display_name
+                                            }
+                                            radius="xs"
+                                            size="lg"
+                                            src={unit.characters.img}
+                                          />
+                                          {unit.tier === 3 ? (
+                                            <Group
+                                              sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent:
+                                                  'center',
+                                              }}
+                                            >
+                                              <Image
+                                                alt="Three stars"
+                                                src={ThreeStars}
+                                              />
+                                            </Group>
+                                          ) : unit.tier === 2 ? (
+                                            <Group
+                                              sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent:
+                                                  'center',
+                                              }}
+                                            >
+                                              <Image
+                                                alt="Two stars"
+                                                src={TwoStars}
+                                              />
+                                            </Group>
+                                          ) : (
+                                            <Group
+                                              sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                visibility: 'hidden',
+                                                justifyContent:
+                                                  'center',
+                                              }}
+                                            >
+                                              <Image
+                                                alt="one stars"
+                                                src={OneStar}
+                                              />
+                                            </Group>
+                                          )}
+                                        </Tooltip>
+                                      </>
+                                    )
+                                  )}
+                                </Group>
+                                <Box
+                                  sx={{
+                                    border: '2px solid red',
+                                    flex: 1,
+                                    padding: '10px',
+                                  }}
+                                >
+                                  <Stack>
+                                    <Group>
+                                      <Group spacing={5}>
+                                        <GiTwoCoins
+                                          color="#C9AC6D"
+                                          size={20}
                                         />
-                                        {unit.tier === 3 ? (
-                                          <Group
-                                            sx={{
-                                              display: 'flex',
-                                              alignItems: 'center',
-                                              justifyContent:
-                                                'center',
-                                            }}
-                                          >
-                                            <Image
-                                              alt="Three stars"
-                                              src={ThreeStars}
-                                            />
-                                          </Group>
-                                        ) : unit.tier === 2 ? (
-                                          <Group
-                                            sx={{
-                                              display: 'flex',
-                                              alignItems: 'center',
-                                              justifyContent:
-                                                'center',
-                                            }}
-                                          >
-                                            <Image
-                                              alt="Two stars"
-                                              src={TwoStars}
-                                            />
-                                          </Group>
-                                        ) : (
-                                          <Group
-                                            sx={{
-                                              display: 'flex',
-                                              alignItems: 'center',
-                                              visibility: 'hidden',
-                                              justifyContent:
-                                                'center',
-                                            }}
-                                          >
-                                            <Image
-                                              alt="one stars"
-                                              src={OneStar}
-                                            />
-                                          </Group>
-                                        )}
-                                      </Tooltip>
-                                    </>
-                                  )
-                                )}
+                                        <Text>
+                                          {participant.gold_left}
+                                        </Text>
+                                      </Group>
+                                      <Text>
+                                        Lv.{participant.level}
+                                      </Text>
+                                    </Group>
+                                    <Group>
+                                      {participant.matches_participants_traits.map(
+                                        (trait) => {
+                                          console.log({ trait });
+                                          return (
+                                            <Text
+                                              key={
+                                                trait.traits
+                                                  .display_name
+                                              }
+                                            >
+                                              {trait.tier_total} -
+                                              {trait.tier_current}
+                                              {
+                                                trait.traits
+                                                  .display_name
+                                              }
+                                            </Text>
+                                          );
+                                        }
+                                      )}
+                                    </Group>
+                                  </Stack>
+                                </Box>
                               </Group>
                             </Accordion.Item>
                           </Accordion>
