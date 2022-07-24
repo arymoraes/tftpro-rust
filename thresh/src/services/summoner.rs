@@ -33,12 +33,22 @@ pub fn get_summoners_service() {
 
     regions.par_iter().for_each(|region| {
         let pool = pool.clone();
-        let conn = &mut pool.get().unwrap();
+        let conn = &mut pool.get();
 
-        let leagues = League::all_by_region(region, conn);
-        for league in leagues {
-            fetch_summoners_from_league(&league, conn).unwrap();
-        }
+        match conn {
+            Ok(conn) => {
+                let leagues = League::all_by_region(region, conn);
+                for league in leagues {
+                    fetch_summoners_from_league(&league, conn).unwrap();
+                }
+            }
+            Err(e) => {
+                println!(
+                    "Error while getting connection pool: {}",
+                    e.to_string().red()
+                );
+            }
+        };
     });
 
     println!("{}", "Summoners fetched!".green());

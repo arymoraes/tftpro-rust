@@ -30,9 +30,11 @@ router.get('/matches', async (req, res) => {
               style: true,
               tier_current: true,
               tier_total: true,
+              num_units: true, 
               traits: {
                 select: {
                   display_name: true,
+                  trait_id: true,
                 },
               },
             },

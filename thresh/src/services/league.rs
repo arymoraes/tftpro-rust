@@ -11,7 +11,7 @@ pub fn create_leagues_service(conn: &PgConnection) {
     let regions: [&str; 11] = [
         "BR1", "EUN1", "EUW1", "JP1", "KR", "LA1", "LA2", "NA1", "OC1", "TR1", "RU",
     ];
-    let tiers: [&str; 1] = ["challenger"]; // We can add master and grandmaster here if we want to
+    let tiers: [&str; 2] = ["challenger", "grandmaster"]; // We can add master and grandmaster here if we want to
 
     for region in regions.iter() {
         for tier in tiers.iter() {

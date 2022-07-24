@@ -8,8 +8,10 @@ export interface MatchParticipantTraitI {
   style: number;
   tier_current: number;
   tier_total: number;
+  num_units: number;
   traits: {
     display_name: string;
+    trait_id: string;
   };
 }
 
